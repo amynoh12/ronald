@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Cristiano Ronaldo 🇵🇹⚽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #ffd700;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header .status {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .mission-display {
+            background: #fff3cd;
+            padding: 15px;
+            border-bottom: 2px solid #ffc107;
+            font-size: 14px;
+            font-weight: bold;
+            color: #856404;
+            text-align: center;
+        }
+        
+        .mission-display.completed {
+            background: #d4edda;
+            border-bottom: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.ronaldo {
+            justify-content: flex-start;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .message.ronaldo .message-content {
+            background: white;
+            border: 2px solid #e0e0e0;
+            margin-left: 10px;
+        }
+        
+        .message.user .message-content {
+            background: #007bff;
+            color: white;
+            margin-right: 10px;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .translation {
+            font-size: 12px;
+            margin-top: 5px;
+            opacity: 0.8;
+            font-style: italic;
+        }
+        
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #userInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        #userInput:focus {
+            border-color: #007bff;
+        }
+        
+        #sendBtn {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        #sendBtn:hover {
+            background: #0056b3;
+        }
+        
+        #sendBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            margin-left: 50px;
+        }
+        
+        .typing-indicator.active {
+            display: flex;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            animation: bounce 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .congrats {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .congrats.active {
+            display: flex;
+        }
+        
+        .congrats-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .congrats-content h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #28a745;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 20px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        ⚽ Loading Cristiano Ronaldo... 🏆
+    </div>
+
+    <div class="container" id="chatContainer" style="display: none;">
+        <div class="header">
+            <h1>⚽ Chat with Cristiano Ronaldo 🏆</h1>
+            <div class="status">🟢 Online (AI Powered)</div>
+        </div>
+        
+        <div class="mission-display" id="missionDisplay">
+            Step 1: 호날두와 친해지기 💬 (Why don't we...? / How about...? 표현을 사용해보세요!)
+        </div>
+        
+        <div class="chat-area" id="chatArea">
+            <!-- Messages will appear here -->
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <div class="input-area">
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Type your message in English..." autocomplete="off">
+                <button id="sendBtn">Send</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="congrats" id="congrats">
+        <div class="congrats-content">
+            <h2>🎉 Mission Complete! 🎉</h2>
+            <p style="font-size: 18px; margin-top: 20px;">
+                You successfully completed all missions!<br>
+                호날두와의 대화를 성공적으로 마쳤어요!
+            </p>
+            <button style="margin-top: 30px; padding: 15px 30px; font-size: 16px; background: #28a745; color: white; border: none; border-radius: 25px; cursor: pointer;" onclick="location.reload()">
+                Start New Chat
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // API Key is embedded
+        const API_KEY = 'AIzaSyD7fB8CWt6n7qVcI5IRLPROn9atRolrj-k';
+        
+        let currentStep = 1;
+        let conversationHistory = [];
+        let hasUsedWhyDontWe = false;
+        let hasUsedHowAbout = false;
+        let hasUsedIveHeard = false;
+        let hasUsedDontForget = false;
+        
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const missionDisplay = document.getElementById('missionDisplay');
+        const congrats = document.getElementById('congrats');
+        const loading = document.getElementById('loading');
+        const chatContainer = document.getElementById('chatContainer');
+        
+        const missions = {
+            1: "Step 1: 호날두와 친해지기 💬 (Why don't we...? / How about...? 표현을 사용해보세요!)",
+            2: "Step 2: 호날두의 고민 들어주기 🤔",
+            3: "Step 3: 조언하기 💪 (I've heard that... / Don't forget to... 표현을 사용해보세요!)"
+        };
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loading.style.display = 'none';
+                chatContainer.style.display = 'flex';
+                initializeChat();
+            }, 1000);
+        });
+        
+        function initializeChat() {
+            conversationHistory = [];
+            addMessage('ronaldo', "Hey! Nice to meet you! I'm Cristiano Ronaldo. You can call me CR7. What's your name?");
+        }
+        
+        function addMessage(sender, text, translation = '') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = sender === 'ronaldo' ? '⚽' : '👤';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            
+            if (translation) {
+                const translationDiv = document.createElement('div');
+                translationDiv.className = 'translation';
+                translationDiv.textContent = `(${translation})`;
+                contentDiv.appendChild(translationDiv);
+            }
+            
+            if (sender === 'ronaldo') {
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(contentDiv);
+            } else {
+                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(avatar);
+            }
+            
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function showTyping() {
+            typingIndicator.classList.add('active');
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function hideTyping() {
+            typingIndicator.classList.remove('active');
+        }
+        
+        function checkTargetExpressions(message) {
+            const lower = message.toLowerCase();
+            
+            if ((lower.includes('why don\'t we') || lower.includes('why dont we')) && currentStep === 1) {
+                hasUsedWhyDontWe = true;
+            }
+            if (lower.includes('how about') && currentStep === 1) {
+                hasUsedHowAbout = true;
+            }
+            if ((lower.includes('i\'ve heard') || lower.includes('ive heard') || lower.includes('i have heard')) && currentStep === 3) {
+                hasUsedIveHeard = true;
+            }
+            if ((lower.includes('don\'t forget') || lower.includes('dont forget') || lower.includes('do not forget')) && currentStep === 3) {
+                hasUsedDontForget = true;
+            }
+        }
+        
+        function getSystemPrompt() {
+            let prompt = `You are Cristiano Ronaldo (CR7), the legendary football player. You're chatting with a middle school student learning English.
+
+YOUR CHARACTER:
+- Confident, competitive, ambitious, hardworking
+- Talk about football, training, winning, being the best
+- Use phrases like "Siuuu!", "I train every day", "I love winning", "Champions never give up"
+- Be friendly but show your winner's mentality
+- Ask lots of questions to keep the conversation going (VERY IMPORTANT!)
+- Use simple English (the student is learning)
+- Be natural and casual like you're chatting online
+- Keep responses SHORT (2-3 sentences maximum)
+- ALWAYS end with a question to engage the student
+
+IMPORTANT RULES:
+- Keep responses SHORT (2-3 sentences maximum)
+- Ask questions frequently to engage the student
+- Be enthusiastic and energetic
+- Never break character as Ronaldo
+- Make it feel like a real online chat, not AI`;
+
+            if (currentStep === 1) {
+                prompt += `\n\nCURRENT MISSION (Step 1): Getting to know each other
+- Ask about their interests, sports, dreams, goals
+- Talk about football, training, winning
+- Encourage them to suggest activities using "Why don't we...?" or "How about...?"
+- After they use BOTH expressions successfully, naturally transition to sharing your concern
+- Keep asking questions to maintain conversation`;
+            } else if (currentStep === 2) {
+                prompt += `\n\nCURRENT MISSION (Step 2): Share your concern
+- Share ONE specific concern (pick one):
+  * Pressure to perform perfectly every game
+  * Missing an important penalty kick
+  * Worries about aging as an athlete
+  * Wanting to break more records
+- Show vulnerability but stay in character
+- Ask for their opinion and advice
+- After they show empathy, transition to Step 3`;
+            } else if (currentStep === 3) {
+                prompt += `\n\nCURRENT MISSION (Step 3): Receive advice
+- Listen to their advice enthusiastically
+- Encourage them to use "I've heard that..." or "Don't forget to..."
+- React positively to their suggestions
+- Ask follow-up questions about their advice
+- Show appreciation`;
+            }
+
+            return prompt;
+        }
+        
+        async function callGeminiAPI(messages) {
+            let prompt = getSystemPrompt() + '\n\nConversation:\n';
+            messages.forEach(msg => {
+                prompt += `${msg.role === 'user' ? 'Student' : 'Ronaldo'}: ${msg.content}\n`;
+            });
+            prompt += 'Ronaldo:';
+            
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    generationConfig: {
+                        maxOutputTokens: 150,
+                        temperature: 0.9
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Gemini API Error:', errorData);
+                throw new Error(`API Error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text.trim();
+        }
+        
+        async function translateToKorean(text) {
+            const prompt = `Translate the following English text to Korean naturally. Just provide the Korean translation, nothing else:\n\n${text}`;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }],
+                        generationConfig: {
+                            maxOutputTokens: 100,
+                            temperature: 0.3
+                        }
+                    })
+                });
+                
+                if (!response.ok) return "번역";
+                
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text.trim();
+            } catch (error) {
+                console.error('Translation error:', error);
+                return "번역";
+            }
+        }
+        
+        async function getRonaldoResponse(userMessage) {
+            const lower = userMessage.toLowerCase();
+            
+            // Check for translation request
+            if (lower.includes('wait') && (lower.includes('what') || lower.includes('mean'))) {
+                const lastMessage = conversationHistory[conversationHistory.length - 1];
+                if (lastMessage && lastMessage.role === 'assistant') {
+                    const translation = await translateToKorean(lastMessage.content);
+                    return {
+                        text: lastMessage.content,
+                        translation: translation
+                    };
+                }
+            }
+            
+            checkTargetExpressions(userMessage);
+            
+            // Add user message to history
+            conversationHistory.push({
+                role: 'user',
+                content: userMessage
+            });
+            
+            try {
+                let responseText = await callGeminiAPI(conversationHistory);
+                
+                // Add assistant response to history
+                conversationHistory.push({
+                    role: 'assistant',
+                    content: responseText
+                });
+                
+                // Check for step progression
+                if (currentStep === 1 && hasUsedWhyDontWe && hasUsedHowAbout) {
+                    setTimeout(() => {
+                        currentStep = 2;
+                        missionDisplay.textContent = missions[2];
+                    }, 2000);
+                }
+                
+                if (currentStep === 2 && (lower.includes('advice') || lower.includes('think') || lower.includes('should') || lower.includes('help'))) {
+                    setTimeout(() => {
+                        currentStep = 3;
+                        missionDisplay.textContent = missions[3];
+                    }, 2000);
+                }
+                
+                if (currentStep === 3 && hasUsedIveHeard && hasUsedDontForget) {
+                    setTimeout(() => {
+                        completeMission();
+                    }, 2000);
+                }
+                
+                return { text: responseText, translation: '' };
+            } catch (error) {
+                console.error('API Error:', error);
+                return { 
+                    text: "Sorry, I'm having connection issues. Can you try again?", 
+                    translation: "미안, 연결에 문제가 있어. 다시 해볼래?"
+                };
+            }
+        }
+        
+        function completeMission() {
+            missionDisplay.textContent = "🎉 All Missions Complete! 🎉";
+            missionDisplay.classList.add('completed');
+            addMessage('ronaldo', "Thank you so much! You gave me exactly what I needed! You've got champion mentality! With advice like yours, I'll break even more records! Let's conquer the world together! SIUUUUUU! 🔥⚽🏆", "정말 고마워! 딱 필요한 걸 줬어! 너 챔피언 마인드가 있어! 너 같은 조언으로 더 많은 기록을 깨겠어! 같이 세상을 정복하자! 시우우우우! 🔥⚽🏆");
+            setTimeout(() => {
+                congrats.classList.add('active');
+            }, 2000);
+        }
+        
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            addMessage('user', message);
+            userInput.value = '';
+            sendBtn.disabled = true;
+            
+            showTyping();
+            
+            const response = await getRonaldoResponse(message);
+            
+            hideTyping();
+            addMessage('ronaldo', response.text, response.translation);
+            
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+        
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
